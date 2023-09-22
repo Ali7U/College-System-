@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model class_1 {
+  id            String      @id @default(uuid())
+  class_id      Int?
+  numOfStudents Int
+  fromTime      DateTime
+  toTime        DateTime   
+  teacherId     String
+  courseId      String
+  course        course      @relation(fields: [courseId], references: [id], map: "Class_1_courseId_fkey")
+  controller    controller  @relation(fields: [teacherId], references: [id], map: "Class_1_teacherId_fkey")
+  showclass     showclass[]
+
+  @@index([courseId], map: "Class_1_courseId_fkey")
+  @@index([teacherId], map: "Class_1_teacherId_fkey")
+}
+
+model controller {
+  id       String          @id @default(uuid())
+  fName    String
+  lName    String
+  email    String          @unique(map: "Controller_email_key")
+  password String
+  major    String
+  role     controller_role @default(Teacher)
+  class_1  class_1[]
+  course   course[]
+}
+
+model course {
+  id         String     @id @default(uuid())
+  title      String
+  hours      Int
+  major      String
+  teacherID  String
+  class_1    class_1[]
+  controller controller @relation(fields: [teacherID], references: [id], map: "Course_teacherID_fkey")
+
+  @@index([teacherID], map: "Course_teacherID_fkey")
+}
+
+model showclass {
+  id String @unique @default(uuid())
+  studentId String
+  classId   String
+  class_1   class_1 @relation(fields: [classId], references: [id], map: "ShowClass_classId_fkey")
+  student   student @relation(fields: [studentId], references: [id], map: "ShowClass_studentId_fkey")
+
+  @@id([studentId, classId])
+  @@index([classId], map: "ShowClass_classId_fkey")
+}
+
+model student {
+  id        String      @id @default(uuid())
+  fName     String
+  lName     String
+  email     String      @unique(map: "Student_email_key")
+  password  String
+  major     String
+  showclass showclass[]
+  role controller_role @default(Student)
+}
+
+enum controller_role {
+  Admin
+  Teacher
+  Student
+}

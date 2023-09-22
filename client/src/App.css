@@ -1,0 +1,10 @@
+.inp {
+    border: 2px solid;
+    box-shadow: 0 0 1px silver;
+    border-radius: 7px;
+}
+
+.p {
+    font-size: 36px;
+    text-align: center;
+}
